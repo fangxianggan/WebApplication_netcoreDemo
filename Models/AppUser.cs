@@ -7,7 +7,7 @@ namespace WebApp.Models
 {
     public class AppUser
     {
-        public string UserName { get; set; }
+        public string UserName   { get; set; }
 
         //不要在意类型
         public string Menus { get; set; }
