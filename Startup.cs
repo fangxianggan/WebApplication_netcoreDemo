@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Threading.Tasks;
+using WebApplication1.Common;
 using WebApplication1.Extendsion;
 using WebApplication1.Middleware;
 using WebApplication1.Models;
@@ -19,15 +20,12 @@ namespace WebApplication1
 {
     public class Startup
     {
-
         //配置文件获取的
-        private  IConfiguration _configuration;
-     
+        private IConfiguration _configuration;
 
-        public Startup(IConfiguration configuration)
+        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
         {
-            _configuration = configuration;
-           
+            _configuration = AppSettingsConfigure.SetConfigure(env.ContentRootPath, env.EnvironmentName);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -35,20 +33,15 @@ namespace WebApplication1
         public void ConfigureServices(IServiceCollection services)
         {
 
-
-
-
             // services.AddCustEncodingService();
 
-           // services.AddCustJsonFileService(_configuration);
-
-           
+            // services.AddCustJsonFileService(_configuration);
 
             //注册到服务里
 
             //1.注册配置选项的服务
-             services.Configure<MM>(_configuration.GetSection("MM"));
-             services.Configure<dddModel>(_configuration);
+            services.Configure<MM>(_configuration.GetSection("MM"));
+            services.Configure<dddModel>(_configuration);
 
 
             //2.通过绑定配置对象模型方式  用法是  IOptions<T> 获取 
@@ -62,16 +55,13 @@ namespace WebApplication1
 
 
             //3.直接读取
-            var aaa= _configuration["dddModel:uuu"];
+            var aaa = _configuration["dddModel:uuu"];
             var aa = _configuration["MM:aa"];
             var bb = _configuration["MM:bb"];
 
             Console.WriteLine(aaa);
             Console.WriteLine(aa);
             Console.WriteLine(bb);
-
-
-
 
             //使用自定义的服务
             services.AddCustomHttpContextAccessor();
@@ -84,10 +74,6 @@ namespace WebApplication1
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IHttpContextAccessor httpContext)
         {
-
-
-         
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -109,6 +95,19 @@ namespace WebApplication1
 
             app.UseRouting();
 
+            //
+            app.Use(async (context, next) =>
+            {
+                var dd = context.Request.RouteValues;
+                foreach (var item in dd)
+                {
+                    Console.WriteLine(item.Value.ToString());
+                }
+                
+                await next();
+            });
+
+
             app.UseEndpoints(endpoints =>
             {
                 //endpoints.MapGet("/", async context =>
@@ -122,12 +121,8 @@ namespace WebApplication1
                 //    await context.Response.WriteAsync("ip=" + ip + ";port=" + port + "");
                 //    await context.Response.WriteAsync("Hello World!");
                 //});
-
                 endpoints.MapControllers();
-
             });
-
-            
         }
     }
 }
