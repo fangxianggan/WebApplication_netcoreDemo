@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace WebApp.Controllers
@@ -16,10 +17,13 @@ namespace WebApp.Controllers
         private readonly IOptions<WebApplication1.Models.MM> _option;
         private readonly IOptions<WebApplication1.Models.dddModel> _optiondd;
 
-        public ValuesController(IOptions<WebApplication1.Models.MM> option, IOptions<WebApplication1.Models.dddModel> optiondd)
+        private readonly ILogger<ValuesController> _logger;
+
+        public ValuesController(ILogger<ValuesController> logger,IOptions<WebApplication1.Models.MM> option, IOptions<WebApplication1.Models.dddModel> optiondd)
         {
             _option = option;
             _optiondd = optiondd;
+            _logger = logger;
         }
         // GET api/values
         [HttpGet]
@@ -32,6 +36,11 @@ namespace WebApp.Controllers
             var a = aa.ToList();
             var b = dd.ToList();
             var cc = a.Concat(b);
+
+            //默认的日志输出
+
+            _logger.LogInformation("kkkkkk");
+
             return cc;
         }
 
