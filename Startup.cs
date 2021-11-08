@@ -23,9 +23,11 @@ namespace WebApplication1
         //配置文件获取的
         private IConfiguration _configuration;
 
-        public Startup(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        public Startup(IHostEnvironment env)
         {
             _configuration = AppSettingsConfigure.SetConfigure(env.ContentRootPath, env.EnvironmentName);
+            //设置日志
+            _configuration.SetSerilogConfig();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -68,7 +70,6 @@ namespace WebApplication1
 
             //
             services.AddControllers();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

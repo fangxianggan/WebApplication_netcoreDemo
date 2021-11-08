@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace WebApplication1
                     webBuilder.UseStartup<Startup>();
                     //硬编码改变启动地址
                     // webBuilder.UseUrls("http://*:7000");
-                });
+                }).UseSerilog(dispose:true);
 
        
 

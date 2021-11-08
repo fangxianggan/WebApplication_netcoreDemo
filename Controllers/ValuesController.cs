@@ -39,8 +39,12 @@ namespace WebApp.Controllers
 
             //默认的日志输出
 
-            _logger.LogInformation("kkkkkk");
-
+            _logger.LogTrace("version" + Guid.NewGuid().ToString("N"));
+            _logger.LogDebug("LogDebug" + Guid.NewGuid().ToString("N"));
+            _logger.LogInformation("LogInformation" + Guid.NewGuid().ToString("N"));
+            _logger.LogWarning("LogWarning" + Guid.NewGuid().ToString("N"));
+            _logger.LogError("LogError" + Guid.NewGuid().ToString("N"));
+            _logger.LogCritical("LogError" + Guid.NewGuid().ToString("N"));
             return cc;
         }
 
