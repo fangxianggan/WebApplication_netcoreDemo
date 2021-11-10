@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StackExchange.Profiling.Storage;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
@@ -15,6 +18,7 @@ using WebApplication1.Common;
 using WebApplication1.Extendsion;
 using WebApplication1.Middleware;
 using WebApplication1.Models;
+using WebApplication1.Services;
 
 namespace WebApplication1
 {
@@ -38,6 +42,10 @@ namespace WebApplication1
             // services.AddCustEncodingService();
 
             // services.AddCustJsonFileService(_configuration);
+
+            //swagger注入
+            services.AddSwaggerServiceSetup();
+
 
             //注册到服务里
 
@@ -68,6 +76,25 @@ namespace WebApplication1
             //使用自定义的服务
             services.AddCustomHttpContextAccessor();
 
+
+            services.AddMiniProfiler(options =>
+            {
+                //设置访问地址的根目录路径
+                options.RouteBasePath = "/profiler";
+                //数据缓存时间
+                (options.Storage as MemoryCacheStorage).CacheDuration = TimeSpan.FromMinutes(60);
+                //sql 格式的设置
+                options.SqlFormatter =new StackExchange.Profiling.SqlFormatters.InlineFormatter();
+                //跟踪连接打开关闭
+                options.TrackConnectionOpenClose = true;
+                //界面主题颜色方案;默认浅色
+                options.ColorScheme = StackExchange.Profiling.ColorScheme.Dark;
+                //.net core 3.0以上：对MVC过滤器进行分析
+                options.EnableMvcFilterProfiling = true;
+                //对视图进行分析
+                options.EnableMvcViewProfiling = true;
+            });
+
             //
             services.AddControllers();
         }
@@ -79,6 +106,28 @@ namespace WebApplication1
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            //启动swagger 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+               
+
+                //自定义swaager显示的首页 为了集成miniprofiler 性能检测
+                c.IndexStream = (Func<Stream>)(
+                () => Assembly.GetExecutingAssembly().GetManifestResourceStream("WebApplication1.wwwroot.index.html")
+                );
+
+                //  设置首页为Swagger
+                c.RoutePrefix = string.Empty;
+
+                //
+                c.SwaggerEndpoint("/swagger/V1/swagger.json", "webapi v1");
+
+                //
+            });
+
+            app.UseMiniProfiler();
 
             //加入到管道
             app.UseStaticHttpContext();
@@ -104,7 +153,7 @@ namespace WebApplication1
                 {
                     Console.WriteLine(item.Value.ToString());
                 }
-                
+
                 await next();
             });
 

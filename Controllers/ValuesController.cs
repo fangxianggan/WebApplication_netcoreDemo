@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using StackExchange.Profiling;
+using WebApplication1.Models;
 
 namespace WebApp.Controllers
 {
-
+    /// <summary>
+    /// 一日一日游刃有余
+    /// </summary>
     [Route("api/[controller]")]
+
     public class ValuesController : Controller
     {
         private readonly IOptions<WebApplication1.Models.MM> _option;
@@ -19,7 +24,13 @@ namespace WebApp.Controllers
 
         private readonly ILogger<ValuesController> _logger;
 
-        public ValuesController(ILogger<ValuesController> logger,IOptions<WebApplication1.Models.MM> option, IOptions<WebApplication1.Models.dddModel> optiondd)
+        /// <summary>
+        /// jgjgjgaaa
+        /// </summary>
+        /// <param name="logger">ww</param>
+        /// <param name="option">33</param>
+        /// <param name="optiondd">444rr</param>
+        public ValuesController(ILogger<ValuesController> logger, IOptions<WebApplication1.Models.MM> option, IOptions<WebApplication1.Models.dddModel> optiondd)
         {
             _option = option;
             _optiondd = optiondd;
@@ -68,7 +79,7 @@ namespace WebApp.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] MM value)
         {
 
         }
@@ -85,5 +96,24 @@ namespace WebApp.Controllers
         public void Delete(int id)
         {
         }
+
+
+
+        /// <summary>
+        /// 获取html片段
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet]
+        [Route("GetHtml")]
+        public IActionResult GetHtml()
+        {
+
+            var html = MiniProfiler.Current.RenderIncludes(HttpContext);
+            return Ok(html.Value);
+
+
+        }
     }
+
 }
