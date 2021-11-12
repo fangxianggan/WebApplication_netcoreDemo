@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Compact;
+using Serilog.Sinks.Elasticsearch;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +23,14 @@ namespace WebApplication1.Extendsion
 
             //serilog 日志级别
             //Verbose >Debug > Information> Warning  >Error > Fatal
+            var elasticUri = configration["ElasticConfiguration:Uri"];
+
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configration)
                //  .MinimumLevel.Information() //最小日志级别
                //   .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-               //   .Enrich.FromLogContext()//使用Serilog.Context.LogContext中的属性丰富日志事件。
+                  .Enrich.FromLogContext()//使用Serilog.Context.LogContext中的属性丰富日志事件。
                // .WriteTo.Console(new RenderedCompactJsonFormatter())//输出到控制台
                //.WriteTo.Console(
                //  outputTemplate: "发生时间:{Timestamp: HH:mm:ss.fff} 事件级别:{Level} 详细信息:{Message}{NewLine}{Exception}")
@@ -71,8 +74,11 @@ namespace WebApplication1.Extendsion
                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level}] {SourceContext} {NewLine}{Message}{NewLine}{Exception}",
                   rollingInterval: RollingInterval.Day,
                   rollOnFileSizeLimit: true);
+          }).WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+          {
+              AutoRegisterTemplate = true,
           })
-               .CreateLogger();//清除内置日志框架
+           .CreateLogger();//清除内置日志框架
         }
     }
 }
