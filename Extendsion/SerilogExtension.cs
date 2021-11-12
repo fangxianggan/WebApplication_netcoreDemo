@@ -32,7 +32,7 @@ namespace WebApplication1.Extendsion
                //.WriteTo.Console(
                //  outputTemplate: "发生时间:{Timestamp: HH:mm:ss.fff} 事件级别:{Level} 详细信息:{Message}{NewLine}{Exception}")
              //  .WriteTo.File(formatter: new CompactJsonFormatter(), "logs\\test.txt", rollingInterval: RollingInterval.Day)//输出到文件
-
+                
                .WriteTo.Logger(lc => {
                    lc.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
                    .WriteTo.File("logs/informations/log.txt",
