@@ -42,8 +42,8 @@ namespace WebApplication1
                     // webBuilder.UseUrls("http://*:7000");
                 }).UseSerilog(dispose:true);
 
-       
 
-       
+        
+
     }
 }
